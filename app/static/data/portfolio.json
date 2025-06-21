@@ -3,5 +3,24 @@
   "name": "Ali Osman",
   "location": "San Francisco, CA",
   "education": "Computer Science at Minerva University",
-  "email": "osman@uni.minerva.edu"
+  "email": "osman@uni.minerva.edu",
+  "education_history": [
+    {
+      "institution": "Minerva University",
+      "location": "San Francisco, CA",
+      "degree": "Bachelor of Computer Science (Software Engineering & AI)",
+      "gpa": "3.7",
+      "duration": "Aug. 2022 – May 2026",
+      "bullets": [
+        "Relevant Coursework: Data Structures & Algorithms, OOP, Software Engineering, Web Development (React, Flask), Artificial Intelligence, Machine Learning"
+      ]
+    },
+    {
+      "institution": "CodePath",
+      "location": "Remote",
+      "degree": "Advanced Technical Interview Prep Course (TIP103)",
+      "duration": "Completed",
+      "bullets": []
+    }
+  ]
 }

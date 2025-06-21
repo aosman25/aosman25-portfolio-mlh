@@ -9,10 +9,7 @@ body {
     overflow-x: hidden;
     font-family: "Roboto", serif;
     margin: 0px;
-}
-
-section {
-    padding: 0 20%;
+    padding-bottom: 10px;
 }
 
 .nav-bar {

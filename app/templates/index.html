@@ -37,13 +37,14 @@
         </a>
       </div>
     </header>
-
-    <div class="profile">
-      <div id="profile-picture" class="profile-picture">
-        <img src="./static/img/logo.jpg" />
+    <main>
+      <div class="profile">
+        <div id="profile-picture" class="profile-picture">
+          <img src="./static/img/logo.jpg" />
+        </div>
+        <h1>{{ title }}</h1>
       </div>
-      <h1>{{ title }}</h1>
-    </div>
-    {% include "sections/about.html" %}
+      <div class="content">{% block content %} {% endblock %}</div>
+    </main>
   </body>
 </html>

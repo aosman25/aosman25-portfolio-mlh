@@ -3,5 +3,14 @@
   "name": "Ali Osman",
   "location": "San Francisco, CA",
   "education": "Computer Science at Minerva University",
-  "email": "osman@uni.minerva.edu"
+  "email": "osman@uni.minerva.edu",
+  "countries_visited": [
+    { "country": "Egypt", "city": "Cairo" },
+    { "country": "USA", "city": "San Francisco" },
+    { "country": "Germany", "city": "Berlin" },
+    { "country": "Argentina", "city": "Buenos Aires" },
+    { "country": "South Korea", "city": "Seoul" },
+    { "country": "Turkey", "city": "Istanbul" },
+    { "country": "Qatar", "city": "Doha" }
+  ]
 }

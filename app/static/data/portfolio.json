@@ -3,5 +3,19 @@
   "name": "Ali Osman",
   "location": "San Francisco, CA",
   "education": "Computer Science at Minerva University",
-  "email": "osman@uni.minerva.edu"
+  "email": "osman@uni.minerva.edu",
+  "hobbies": [
+    {
+      "name": "Coding",
+      "image": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGhuYWs3M2owcmNvNmd3bTJ3aGVzMHFmMnIzdjNjODVuMXV5czNwZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JqmupuTVZYaQX5s094/giphy.gif"
+    },
+    {
+      "name": "Puzzle Video Games",
+      "image": "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2N5YnQ0NnF3amZrazlweWc1OG05NnUyNTdvaWJ3aDc0Ymt4NWNtbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6Mbr1blVD5KKQBxK/giphy.gif"
+    },
+    {
+      "name": "Watching YouTube",
+      "image": "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3ZoNTZpMGlzdWNtc2hvMXJheHBhYWNqcGFyZjVlaXNseTVvbnl4biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sb7WSbjHFNIL6/giphy.gif"
+    }
+  ]
 }

@@ -1,10 +1,8 @@
-/* General hobbies section layout */
-
-/* Grid layout */
-#hobbies .grid {
+/* Flex layout */
+#hobbies .hobbies-container {
   display: flex;
   gap: 1.5rem;
-  justify-content: center; /* center the grid items */
+  justify-content: center;
   align-items: center;
   width: 100%;
 }

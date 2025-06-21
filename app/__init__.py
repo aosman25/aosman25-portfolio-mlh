@@ -6,7 +6,7 @@ import json
 load_dotenv()
 app = Flask(__name__)
 
-with open("app/static/data/portfolio.json", "r") as f:
+with open("app/static/data/portfolio.json", "r", encoding="utf-8") as f:
     portfolio_data = json.load(f)
 
 @app.route('/')

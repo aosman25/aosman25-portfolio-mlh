@@ -18,6 +18,11 @@
     />
 
     <link lang="sass" rel="stylesheet" href="./static/styles/main.css" />
+    <link
+      lang="sass"
+      rel="stylesheet"
+      href="./static/styles/sections/main.css"
+    />
     <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon" />
     <title>{{ title }}</title>
   </head>
@@ -32,12 +37,14 @@
         </a>
       </div>
     </header>
-
-    <div class="profile">
-      <div id="profile-picture" class="profile-picture">
-        <img src="./static/img/profile.jpg" />
+    <main>
+      <div class="profile">
+        <div id="profile-picture" class="profile-picture">
+          <img src="./static/img/profile.jpg" />
+        </div>
+        <h1>{{ title }}</h1>
       </div>
-      <h1>{{ title }}</h1>
-    </div>
+      <div class="content">{% block content %} {% endblock %}</div>
+    </main>
   </body>
 </html>

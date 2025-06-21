@@ -1,11 +1,14 @@
 import os
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 app = Flask(__name__)
 
+with open("app/static/data/portfolio.json", "r") as f:
+    portfolio_data = json.load(f)
 
 @app.route('/')
 def index():
-    return render_template('index.html', title="MLH Fellow", url=os.getenv("URL"))
+    return render_template('index.html', **portfolio_data, url=os.getenv("URL"))

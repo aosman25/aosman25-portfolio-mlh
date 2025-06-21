@@ -49,7 +49,8 @@
         </div>
         <h1>{{ title }}</h1>
       </div>
-      <div class="content">{% block content %} {% endblock %}</div>
+      {% block content %} {% include 'pages/index/education.html' %} {% endblock
+      %}
     </main>
   </body>
 </html>

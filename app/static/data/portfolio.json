@@ -46,6 +46,15 @@
       ]
     }
   ],
+  "countries_visited": [
+    { "country": "Egypt", "city": "Cairo" },
+    { "country": "USA", "city": "San Francisco" },
+    { "country": "Germany", "city": "Berlin" },
+    { "country": "Argentina", "city": "Buenos Aires" },
+    { "country": "South Korea", "city": "Seoul" },
+    { "country": "Turkey", "city": "Istanbul" },
+    { "country": "Qatar", "city": "Doha" }
+  ],
   "hobbies": [
     {
       "name": "Coding",

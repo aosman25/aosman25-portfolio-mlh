@@ -27,18 +27,9 @@
       rel="stylesheet"
       href="./static/styles/sections/main.css"
     />
-    <link rel="stylesheet" href="./static/styles/sections/education.css" />
-    <link
-      lang="sass"
-      rel="stylesheet"
-      href="./static/styles/sections/hobbies.css"
-    />
-    <link
-      lang="sass"
-      rel="stylesheet"
-      href="./static/styles/sections/travel.css"
-    />
-
+    {% block styles %} {% for sc in sections %}
+    <link rel="stylesheet" href="./static/styles/sections/{{ sc }}.css" />
+    {% endfor %} {% endblock %}
     <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon" />
     <title>{{ title }}</title>
   </head>
@@ -60,11 +51,17 @@
           <img src="./static/img/profile.jpg" />
         </div>
         <h1>{{ title }}</h1>
+        <div class="navbar">
+          <ul>
+            {% for path,name in routes.items()%}
+            <li><a href="{{path}}">{{name}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
       <div class="content">
-        {% block content %} {% include 'pages/index/about.html'%} {% include
-        'pages/index/education.html' %} {% include 'pages/index/experience.html'
-        %} {% include 'pages/index/travel.html' %} {% endblock %}
+        {% block content %} {% for sc in sections %} {% include 'pages/index/' ~
+        sc ~ '.html' %} {% endfor %} {% endblock %}
       </div>
     </main>
   </body>

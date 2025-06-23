@@ -4,6 +4,12 @@
   "location": "San Francisco, CA",
   "education": "Computer Science at Minerva University",
   "email": "osman@uni.minerva.edu",
+  "sections": ["about", "education", "experience", "travel"],
+  "routes": {
+    "/portfolio": "Portfolio",
+    "/hobbies": "Hobbies",
+    "/technical-projects": "Technical Projects"
+  },
   "education_history": [
     {
       "institution": "Minerva University",

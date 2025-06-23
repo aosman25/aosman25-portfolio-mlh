@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template,  redirect, url_for
 from dotenv import load_dotenv
 import json
 
@@ -11,7 +11,15 @@ with open("app/static/data/portfolio.json", "r", encoding="utf-8") as f:
 
 @app.route('/')
 def index():
+    return redirect(url_for('portfolio'))
+
+@app.route('/portfolio')
+def portfolio():
     return render_template('index.html', **portfolio_data, url=os.getenv("URL"))
+
+@app.route('/technical-projects')
+def technical_projects():
+    return render_template('pages/technical-projects.html', **portfolio_data, url=os.getenv("URL"))
 
 @app.route('/hobbies')
 def hobbies():

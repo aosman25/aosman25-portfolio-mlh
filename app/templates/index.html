@@ -40,13 +40,13 @@
     <main>
       <div class="profile">
         <div id="profile-picture" class="profile-picture">
-          <img src="./static/img/logo.jpg" />
+          <img src="./static/img/profile.jpg" />
         </div>
         <h1>{{ title }}</h1>
       </div>
       <div class="content">
-        {% block content %} {% include 'pages/index/experience.html' %} {%
-        endblock %}
+        {% block content %} {% include 'pages/index/about.html'%} {% include
+        'pages/index/experience.html' %} {% endblock %}
       </div>
     </main>
   </body>

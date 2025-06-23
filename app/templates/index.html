@@ -11,6 +11,10 @@
     <meta property="og:description" content="My Personal Portfolio" />
     <meta property="og:url" content="{{ url }}" />
 
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
@@ -23,10 +27,23 @@
       rel="stylesheet"
       href="./static/styles/sections/main.css"
     />
+    <link rel="stylesheet" href="./static/styles/sections/education.css" />
+    <link
+      lang="sass"
+      rel="stylesheet"
+      href="./static/styles/sections/hobbies.css"
+    />
+    <link
+      lang="sass"
+      rel="stylesheet"
+      href="./static/styles/sections/travel.css"
+    />
+
     <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon" />
     <title>{{ title }}</title>
   </head>
-
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./static/scripts/travel.js"></script>
   <body>
     <header class="nav-bar">
       <div class="nav-content">
@@ -40,7 +57,7 @@
     <main>
       <div class="profile">
         <div id="profile-picture" class="profile-picture">
-          <img src="./static/img/logo.jpg" />
+          <img src="./static/img/profile.jpg" />
         </div>
         <h1>{{ title }}</h1>
         <div class="navbar">
@@ -51,7 +68,11 @@
           </ul>
         </div>
       </div>
-      <div class="content">{% block content %} {% endblock %}</div>
+      <div class="content">
+        {% block content %} {% include 'pages/index/about.html'%} {% include
+        'pages/index/education.html' %} {% include 'pages/index/experience.html'
+        %} {% include 'pages/index/travel.html' %} {% endblock %}
+      </div>
     </main>
   </body>
 </html>

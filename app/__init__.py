@@ -20,3 +20,7 @@ def portfolio():
 @app.route('/technical-projects')
 def technical_projects():
     return render_template('pages/technical-projects.html', **portfolio_data, url=os.getenv("URL"))
+
+@app.route('/hobbies')
+def hobbies():
+    return render_template('pages/hobbies.html', **portfolio_data, url=os.getenv("URL"))

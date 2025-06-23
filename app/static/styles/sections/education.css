@@ -1,0 +1,20 @@
+#education .meta {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+/* Degree & GPA line */
+#education .degree {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+#education .gpa {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}

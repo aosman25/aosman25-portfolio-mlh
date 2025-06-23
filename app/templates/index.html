@@ -27,6 +27,18 @@
       rel="stylesheet"
       href="./static/styles/sections/main.css"
     />
+    <link rel="stylesheet" href="./static/styles/sections/education.css" />
+    <link
+      lang="sass"
+      rel="stylesheet"
+      href="./static/styles/sections/hobbies.css"
+    />
+    <link
+      lang="sass"
+      rel="stylesheet"
+      href="./static/styles/sections/travel.css"
+    />
+
     <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon" />
     <title>{{ title }}</title>
   </head>
@@ -45,13 +57,14 @@
     <main>
       <div class="profile">
         <div id="profile-picture" class="profile-picture">
-          <img src="./static/img/logo.jpg" />
+          <img src="./static/img/profile.jpg" />
         </div>
         <h1>{{ title }}</h1>
       </div>
       <div class="content">
-        {% block content %} {% include 'pages/index/travel.html' %} {% endblock
-        %}
+        {% block content %} {% include 'pages/index/about.html'%} {% include
+        'pages/index/education.html' %} {% include 'pages/index/experience.html'
+        %} {% include 'pages/index/travel.html' %} {% endblock %}
       </div>
     </main>
   </body>

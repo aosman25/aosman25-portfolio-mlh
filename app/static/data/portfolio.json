@@ -4,6 +4,48 @@
   "location": "San Francisco, CA",
   "education": "Computer Science at Minerva University",
   "email": "osman@uni.minerva.edu",
+  "education_history": [
+    {
+      "institution": "Minerva University",
+      "location": "San Francisco, CA",
+      "degree": "Bachelor of Computer Science (Software Engineering & AI)",
+      "gpa": "3.7",
+      "duration": "Aug. 2022 – May 2026",
+      "bullets": [
+        "Relevant Coursework: Data Structures & Algorithms, OOP, Software Engineering, Web Development (React, Flask), Artificial Intelligence, Machine Learning"
+      ]
+    },
+    {
+      "institution": "CodePath",
+      "location": "Remote",
+      "degree": "Advanced Technical Interview Prep Course (TIP103)",
+      "duration": "Completed",
+      "bullets": []
+    }
+  ],
+  "experience": [
+    {
+      "position": "Technical Admission Processor",
+      "company": "Minerva University",
+      "location": "San Francisco, CA",
+      "duration": "Jun 2024 – Aug 2024, Aug 2024 – Present",
+      "bullets": [
+        "Built a Chrome extension utilizing dictionary API to automate word analysis and noun categorization, assisting over 50 admission processors.",
+        "Implemented real-time, color-coded feedback using JavaScript, analyzing definitions and parts of speech, improving accuracy and reducing processing time by 70%.",
+        "Boosted evaluation efficiency by building a metric-calculating tool, analyzing word count, sentence structure, readability scores, and vocabulary diversity, leading to a 30% improvement in decision-making."
+      ]
+    },
+    {
+      "position": "Machine Learning Teacher",
+      "company": "Breakthrough Twin Cities",
+      "location": "Minneapolis, MN",
+      "duration": "Jun 2024 – Aug 2024",
+      "bullets": [
+        "Collaborated with a fellow to design and teach a project-based AI & ML course with 20+ sessions for students.",
+        "Mentored 15+ students in the development and presentation of final projects and models."
+      ]
+    }
+  ],
   "countries_visited": [
     { "country": "Egypt", "city": "Cairo" },
     { "country": "USA", "city": "San Francisco" },
@@ -12,5 +54,19 @@
     { "country": "South Korea", "city": "Seoul" },
     { "country": "Turkey", "city": "Istanbul" },
     { "country": "Qatar", "city": "Doha" }
+  ],
+  "hobbies": [
+    {
+      "name": "Coding",
+      "image": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGhuYWs3M2owcmNvNmd3bTJ3aGVzMHFmMnIzdjNjODVuMXV5czNwZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JqmupuTVZYaQX5s094/giphy.gif"
+    },
+    {
+      "name": "Puzzle Video Games",
+      "image": "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2N5YnQ0NnF3amZrazlweWc1OG05NnUyNTdvaWJ3aDc0Ymt4NWNtbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6Mbr1blVD5KKQBxK/giphy.gif"
+    },
+    {
+      "name": "Watching YouTube",
+      "image": "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3ZoNTZpMGlzdWNtc2hvMXJheHBhYWNqcGFyZjVlaXNseTVvbnl4biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sb7WSbjHFNIL6/giphy.gif"
+    }
   ]
 }

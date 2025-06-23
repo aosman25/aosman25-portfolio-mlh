@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template,  redirect, url_for
+from flask import Flask, render_template, redirect, url_for
 from dotenv import load_dotenv
 import json
 
@@ -24,3 +24,7 @@ def technical_projects():
 @app.route('/hobbies')
 def hobbies():
     return render_template('pages/hobbies.html', **portfolio_data, url=os.getenv("URL"))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('index'))

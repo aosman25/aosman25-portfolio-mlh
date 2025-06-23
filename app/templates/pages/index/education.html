@@ -1,0 +1,19 @@
+<section id="education">
+  <h2>Education</h2>
+  {% for edu in education_history %}
+  <div class="entry">
+    <h3>{{ edu.institution }}</h3>
+    <p class="meta">{{ edu.location }} • {{ edu.duration }}</p>
+    <p class="degree">{{ edu.degree }}</p>
+    {% if edu.gpa %}
+    <p class="gpa">GPA: {{ edu.gpa }}</p>
+    {% endif %} {% if edu.bullets %}
+    <ul>
+      {% for bullet in edu.bullets %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>

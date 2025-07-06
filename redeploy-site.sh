@@ -7,7 +7,7 @@ tmux kill-session -t portfolio-session 2>/dev/null
 tmux new-session -d -s portfolio-session "
 cd aosman25-portfolio-mlh && \
 git fetch && git reset origin/main --hard && \
-if [ ! -d python3-virtualvenv ]; then python -m venv python3-virtualvenv; fi && \
+if [ ! -d python3-virtualvenv ]; then python3 -m venv python3-virtualvenv; fi && \
 source ./python3-virtualvenv/bin/activate && \
 pip install -r requirements.txt && \
 flask run --host 0.0.0.0

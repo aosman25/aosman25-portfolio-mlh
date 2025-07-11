@@ -39,15 +39,15 @@ def index():
 
 @app.route('/portfolio')
 def portfolio():
-    return render_template('index.html', **portfolio_data, url=os.getenv("URL"))
+    return render_template('index.html', **portfolio_data, url=os.getenv("URL"), title="Portfolio")
 
 @app.route('/technical-projects')
 def technical_projects():
-    return render_template('pages/technical-projects.html', **portfolio_data, url=os.getenv("URL"))
+    return render_template('pages/technical-projects.html', **portfolio_data, url=os.getenv("URL"), title="Technical Projects")
 
 @app.route('/hobbies')
 def hobbies():
-    return render_template('pages/hobbies.html', **portfolio_data, url=os.getenv("URL"))
+    return render_template('pages/hobbies.html', **portfolio_data, url=os.getenv("URL"), title="Hobbies")
 
 @app.route('/timeline')
 def timeline():
@@ -71,7 +71,8 @@ def timeline():
         **portfolio_data,
         posts=posts,
         avatars=avatars,
-        url=os.getenv("URL")
+        url=os.getenv("URL"),
+        title="Timeline"
     )
 
 

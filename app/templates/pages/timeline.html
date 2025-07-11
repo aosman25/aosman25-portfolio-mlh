@@ -1,0 +1,32 @@
+{% extends 'index.html' %} {% block styles %}
+<link
+  lang="sass"
+  rel="stylesheet"
+  href="./static/styles/sections/timeline.css"
+/>
+{% endblock %} {% block content %}
+
+<section id="timeline-section">
+  <form id="timeline-form" class="entry" data-base-url="{{ url }}">
+    <h3>Submit a New Post</h3>
+    <label for="name">Name</label>
+    <input required type="text" id="name" name="name" />
+    <label for="email">Email</label>
+    <input required type="email" id="email" name="email" />
+    <label for="content">Content</label>
+    <textarea id="content" name="content"></textarea>
+    <input required type="submit" value="Submit" />
+  </form>
+  <h2>Posts</h2>
+  {% for post in posts %}
+  <div class="timeline-post entry">
+    <img src="{{ avatars[post.email] }}" alt="{{ post.email }}" />
+    <div class="post-body">
+      <h3>{{ post.name }} <small>&lt;{{ post.email }}&gt;</small></h3>
+      <p class="timestamp">{{ post.created_at }}</p>
+      <p class="content">{{ post.content }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

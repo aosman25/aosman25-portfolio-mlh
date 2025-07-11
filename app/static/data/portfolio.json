@@ -8,7 +8,8 @@
   "routes": {
     "/portfolio": "Portfolio",
     "/hobbies": "Hobbies",
-    "/technical-projects": "Technical Projects"
+    "/technical-projects": "Technical Projects",
+    "/timeline": "Timeline"
   },
   "education_history": [
     {

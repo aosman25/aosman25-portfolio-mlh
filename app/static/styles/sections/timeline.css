@@ -1,0 +1,51 @@
+#timeline-form {
+    margin-top: 80px;
+}
+
+.timeline-post.entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 1em;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1em;
+}
+
+.timeline-post.entry img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-post.entry h3 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.timeline-post.entry h3 small {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+.timeline-post.entry .timestamp {
+    font-size: 0.85em;
+    color: #999;
+    margin: 0.25em 0;
+}
+
+.timeline-post.entry .content {
+    margin: 0.5em 0 0;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.timeline-post.entry .post-body {
+    flex: 1;
+}

@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 import json
 from peewee import *
 import datetime
+import hashlib
+from urllib.parse import quote_plus
 from playhouse.shortcuts import model_to_dict
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -45,6 +48,32 @@ def technical_projects():
 @app.route('/hobbies')
 def hobbies():
     return render_template('pages/hobbies.html', **portfolio_data, url=os.getenv("URL"))
+
+@app.route('/timeline')
+def timeline():
+    posts = get_time_line_post()["timeline_posts"]
+    avatar_base_url = "https://gravatar.com/avatar"
+    avatars = {}
+
+    for p in posts:
+        email = p.get("email", "").lower().strip()
+        name = p.get("name", "User")
+        if email not in avatars:
+            ui_avatar_path = f"/{quote_plus(name)}/128/0D8ABC/FFFFFF/2/0.35/true/true/false/png"
+            fallback_url = f"https://ui-avatars.com/api{ui_avatar_path}"
+            fallback_url_encoded = quote_plus(fallback_url)
+
+            hashed_email = hashlib.md5(email.encode('utf-8')).hexdigest()
+            avatars[email] = f"{avatar_base_url}/{hashed_email}?d={fallback_url_encoded}"
+
+    return render_template(
+        'pages/timeline.html',
+        **portfolio_data,
+        posts=posts,
+        avatars=avatars,
+        url=os.getenv("URL")
+    )
+
 
 @app.route('/api/timeline_post', methods=['POST'])
 def post_time_line_post():

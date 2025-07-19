@@ -54,9 +54,11 @@ def timeline():
     posts = get_time_line_post()["timeline_posts"]
     avatar_base_url = "https://gravatar.com/avatar"
     avatars = {}
+    
 
     for p in posts:
-        email = p.get("email", "").lower().strip()
+        p["email"] = p["email"].lower().strip()
+        email = p["email"]
         name = p.get("name", "User")
         if email not in avatars:
             ui_avatar_path = f"/{quote_plus(name)}/128/0D8ABC/FFFFFF/2/0.35/true/true/false/png"
@@ -65,7 +67,6 @@ def timeline():
 
             hashed_email = hashlib.md5(email.encode('utf-8')).hexdigest()
             avatars[email] = f"{avatar_base_url}/{hashed_email}?d={fallback_url_encoded}"
-
     return render_template(
         'pages/timeline.html',
         **portfolio_data,

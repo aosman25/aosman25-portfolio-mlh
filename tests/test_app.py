@@ -1,7 +1,5 @@
 import unittest
 import os
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 
 os.environ['TESTING'] = 'true'
 
@@ -12,13 +10,13 @@ class AppTestCase(unittest.TestCase):
         self.client = app.test_client()
         
     def test_home(self):
-        response = self.client.get('/')
+        response = self.client.get('/', follow_redirects=True)
         assert response.status_code == 200
         html = response.get_data(as_text=True)
         assert '<title>MLH Fellow</title>' in html
 
         # Test home page redirects to portfolio
-        response = self.client.get('/', follow_redirects=False)
+        response = self.client.get('/')
         assert response.status_code == 302
         assert '/portfolio' in response.location
 

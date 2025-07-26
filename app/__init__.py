@@ -47,7 +47,7 @@ def index():
 
 @app.route('/portfolio')
 def portfolio():
-    return render_template('index.html', **portfolio_data, url=os.getenv("URL"), title="MLH Fellow  ")
+    return render_template('index.html', **portfolio_data, url=os.getenv("URL"), title="MLH Fellow")
 
 @app.route('/technical-projects')
 def technical_projects():

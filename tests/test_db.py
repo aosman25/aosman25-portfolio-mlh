@@ -22,3 +22,7 @@ class TestTimelinePost(unittest.TestCase):
       assert first_post.id == 1
       second_post = TimelinePost.create(name='Jane Doe', email='jame@example.com', content= 'Hello, world, I\'m Jane!')
       assert second_post.id == 2
+      # Get posts from database and validate their equality with the new posts
+      posts = TimelinePost.select()
+      assert posts[0] == first_post
+      assert posts[1] == second_post

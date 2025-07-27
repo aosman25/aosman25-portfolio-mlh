@@ -5,14 +5,30 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const formData = new FormData(timelineForm);
     const payload = new URLSearchParams(formData);
+
     try {
-      await fetch(`/api/timeline_post`, {
+      const response = await fetch("/api/timeline_post", {
         method: "POST",
         body: payload,
       });
+
+      if (response.status === 429) {
+        alert(
+          "You're posting too quickly. Please wait a minute before trying again."
+        );
+        return; // Don't reload
+      }
+
+      if (!response.ok) {
+        alert(`Server error: ${response.status}`);
+        return;
+      }
+
+      // Only reload if POST was successful
       location.reload();
     } catch (err) {
-      console.log(`ERROR: ${err}`);
+      console.error("Request failed:", err);
+      alert("Something went wrong. Please try again.");
     }
   });
 });

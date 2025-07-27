@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+python3-virtualenv/
+
+# Python egg metadata
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment files
+.env
+*.env
+
+# Git and version control
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Docker files you don’t want in image
+docker-compose.yml
+.dockerignore

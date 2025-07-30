@@ -1,0 +1,25 @@
+version: "3"
+services:
+  myportfolio-load:
+    container_name: myportfolio-load
+    build: .
+    restart: always
+    environment:
+      - FLASK_ENV=development
+      - URL=localhost:3000
+      - MYSQL_HOST=mysql-load
+    env_file:
+      - .env
+    ports:
+      - "3000:5000"
+    volumes:
+      - .:/myportfolio
+    depends_on:
+      - mysql-load
+  
+  mysql-load:
+    container_name: mysql-load
+    image: mariadb
+    restart: always
+    env_file:
+      - .env

@@ -27,5 +27,14 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_IP: ${{ secrets.SSH_IP }}
-      - name: Print project root directory
-        run: ssh my-vps "cd '${{ secrets.PROJECT_ROOT }}' && pwd"
+      - name: Deploy Site
+        run: |
+          ssh my-vps << 'EOF'
+            cd '${{ secrets.PROJECT_ROOT }}'
+            git fetch && git reset origin/main --hard > /dev/null
+            rm -f ../redeploy-site.sh
+            cp -f redeploy-site.sh ..
+            cd ..
+            chmod +x redeploy-site.sh
+            ./redeploy-site.sh
+          EOF

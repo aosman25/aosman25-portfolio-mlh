@@ -14,7 +14,12 @@ jobs:
     name: "Deploy to VPS"
     needs: run-tests
     runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      deploy_status: ${{ job.status }}
     steps:
+      - name: Simulate deployment failure
+        run: exit 1
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -44,5 +49,13 @@ jobs:
           EOF
       - name: Print Docker Containers
         run: ssh my-vps 'docker ps'
-      - name: Send Discord Message
+      - name: Send Discord Success Message
         run: curl -s -X POST "${{ secrets.DISCORD_WEBHOOK }}" -d "content=🚀 Deployment Successful"
+
+  fallback:
+    needs: deploy
+    if: ${{ needs.deploy.result == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Failure Message
+        run: curl -s -X POST "${{ secrets.DISCORD_WEBHOOK }}" -d "content=🚨 Deployment Failed"

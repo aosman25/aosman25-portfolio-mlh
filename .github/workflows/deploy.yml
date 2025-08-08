@@ -8,6 +8,7 @@ on:
 
 jobs:
   run-tests:
+    name: "Run Tests"
     uses: ./.github/workflows/test.yml
 
   deploy:
@@ -16,8 +17,6 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     steps:
-      - name: Simulate deployment failure
-        run: exit 1
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -51,6 +50,7 @@ jobs:
         run: curl -s -X POST "${{ secrets.DISCORD_WEBHOOK }}" -d "content=🚀 Deployment Successful"
 
   fallback:
+    name: "Handle Deployment Failure"
     needs: deploy
     if: failure()
     runs-on: ubuntu-latest

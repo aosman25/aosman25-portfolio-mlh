@@ -13,10 +13,8 @@ jobs:
   deploy:
     name: "Deploy to VPS"
     needs: run-tests
+    if: success()
     runs-on: ubuntu-latest
-    continue-on-error: true
-    outputs:
-      deploy_status: ${{ job.status }}
     steps:
       - name: Simulate deployment failure
         run: exit 1
@@ -54,7 +52,7 @@ jobs:
 
   fallback:
     needs: deploy
-    if: ${{ needs.deploy.result == 'failure' }}
+    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Send Discord Failure Message

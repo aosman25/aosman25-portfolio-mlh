@@ -8,19 +8,26 @@ from urllib.parse import quote_plus
 from playhouse.shortcuts import model_to_dict
 from app.utils import generate_avatar
 import re
+from flask_redis import FlaskRedis
 
 load_dotenv()
 app = Flask(__name__)
 
+
 if os.getenv("TESTING") == "true":
+    import fakeredis
     print("Running in test mode")
     mydb = SqliteDatabase('file:memory?mode=memory&cache=shared', uri=True)
+    # In-memory fake Redis client
+    redis_client = fakeredis.FakeStrictRedis()
 else:
+    app.config['REDIS_URL'] = os.getenv('REDIS_URL')
     mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"),
                         user=os.getenv("MYSQL_USER"),
                         password=os.getenv("MYSQL_PASSWORD"),
                         host=os.getenv("MYSQL_HOST"),
                         port=3306)
+    redis_client = FlaskRedis(app)
   
 
 class TimelinePost(Model):
@@ -107,6 +114,14 @@ def get_time_line_post():
     limit = request.args.get('limit', 4, type=int)
     cursor = request.args.get('cursor', None, type=int)
     direction = request.args.get('direction', 'next', type=str)
+    cache_key = None
+    
+    if cursor:
+        cache_key = f"timeline_post:limit={limit}:cursor={cursor}:direction={direction}"
+        cached_response = redis_client.get(cache_key)
+        if cached_response:
+            return json.loads(cached_response)
+
     query = TimelinePost.select()
     if cursor:
         if direction == 'next':
@@ -132,6 +147,10 @@ def get_time_line_post():
         next_cursor = None
     posts = [model_to_dict(p) for p in items]
     response = {'timeline_posts': posts, 'next_cursor': next_cursor, 'prev_cursor': prev_cursor}
+    
+    if cache_key:
+        redis_client.set(cache_key, json.dumps(response), ex=3600)
+
     return response
 
 @app.route('/api/timeline_post/<int:post_id>', methods=["DELETE"])

@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify
 from dotenv import load_dotenv
 import json
 from peewee import *
-import datetime
+import time
 import hashlib
 from urllib.parse import quote_plus
 from playhouse.shortcuts import model_to_dict
@@ -30,7 +30,10 @@ class TimelinePost(Model):
     name = CharField()
     email = CharField()
     content = TextField()
-    created_at = DateTimeField(default=datetime.datetime.now)
+    created_at = BigIntegerField(
+        default=lambda: int(time.time() * 1000),  # milliseconds
+        index=True
+    )
 
     class Meta:
         database = mydb
@@ -110,13 +113,30 @@ def post_time_line_post():
 
 @app.route('/api/timeline_post', methods=['GET'])
 def get_time_line_post():
-    return {
-        'timeline_posts': [
-            model_to_dict(p)
-            for p in 
-            TimelinePost.select().order_by(TimelinePost.created_at.desc())
-        ]
-    }
+    limit = request.args.get('limit', 10, type=int)
+    cursor = request.args.get('cursor', None, type=int)
+    direction = request.args.get('direction', 'next', type=str)
+    query = TimelinePost.select()
+    if cursor:
+        if direction == 'next':
+            query = query.where(TimelinePost.created_at < int(cursor)) # Filter Rows based on the create_at timestamp
+        elif direction == 'prev':
+            query = query.where(TimelinePost.created_at > int(cursor))
+    
+    query = query.order_by(TimelinePost.created_at.desc())
+    items = query.limit(limit)
+    if items:
+        first_item_cursor = items[0].created_at
+        last_item_cursor = items[-1].created_at
+        has_next = TimelinePost.select().where(TimelinePost.created_at < last_item_cursor).exists()
+        has_prev = TimelinePost.select().where(TimelinePost.created_at > first_item_cursor).exists()
+        prev_cursor = first_item_cursor if has_prev else None
+        next_cursor = last_item_cursor if has_next else None
+    else:
+        prev_cursor = None
+        next_cursor = None
+    response = {'timeline_posts': [model_to_dict(p) for p in items], 'next_cursor': next_cursor, 'prev_cursor': prev_cursor}
+    return response
 
 @app.route('/api/timeline_post/<int:post_id>', methods=["DELETE"])
 def delete_post(post_id):

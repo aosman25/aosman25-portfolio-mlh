@@ -16,6 +16,7 @@ services:
       - .:/myportfolio
     depends_on:
       - mysql-load
+      - redis
   
   mysql-load:
     container_name: mysql-load
@@ -23,3 +24,9 @@ services:
     restart: always
     env_file:
       - .env
+  redis:
+    container_name: redis
+    image: redis:8.2.0-alpine
+    restart: always
+    ports:
+      - "6379:6379"

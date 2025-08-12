@@ -2,12 +2,11 @@
 <link
   lang="sass"
   rel="stylesheet"
-  href="./static/styles/sections/timeline.css"
+  href="{{ url_for('static', filename='styles/sections/timeline.css') }}"
 />
 {% endblock %} {% block content %}
-
-<section id="timeline-section">
-  <form id="timeline-form" class="entry" data-base-url="{{ url }}">
+<section id="timeline-section" data-base-url="{{ url }}">
+  <form id="timeline-form" class="entry">
     <h3>Submit a New Post</h3>
     <label for="name">Name</label>
     <input required type="text" id="name" name="name" />
@@ -15,18 +14,108 @@
     <input required type="email" id="email" name="email" />
     <label for="content">Content</label>
     <textarea id="content" name="content"></textarea>
-    <input required type="submit" value="Submit" />
+    <input type="submit" value="Submit" />
   </form>
+
   <h2>Posts</h2>
-  {% for post in posts %}
-  <div class="timeline-post entry">
-    <img src="{{ avatars[post.email] }}" alt="{{ post.email }}" />
-    <div class="post-body">
-      <h3>{{ post.name }} <small>&lt;{{ post.email }}&gt;</small></h3>
-      <p class="timestamp">{{ post.created_at }}</p>
-      <p class="content">{{ post.content }}</p>
+  <div class="posts-feed">
+    <div class="pagination-controls">
+      <button id="prev-btn" disabled>⬅ Prev</button>
+      <button id="next-btn" disabled>Next ➡</button>
+    </div>
+    <div id="posts-container">
+      {% for post in posts %}
+      <div class="timeline-post entry">
+        <img src="{{ post.get('avatar_url', '') }}" alt="{{ post.email }}" />
+        <div class="post-body">
+          <h3>{{ post.name }} <small>&lt;{{ post.email }}&gt;</small></h3>
+          <p class="timestamp" data-timestamp="{{ post.created_at }}">
+            {{ post.created_at }}
+          </p>
+          <p class="content">{{ post.content }}</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
-  {% endfor %}
 </section>
+
+<script>
+  function formatTimestampMs(timestampMs) {
+    const date = new Date(Number(timestampMs));
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    return date.toLocaleString("en-US", options);
+  }
+
+  const postLimit = 4;
+
+  // Format all initial posts rendered by Jinja
+  document.addEventListener("DOMContentLoaded", () => {
+    // Format existing timestamps
+    document.querySelectorAll("p.timestamp[data-timestamp]").forEach((el) => {
+      const ts = el.getAttribute("data-timestamp");
+      el.textContent = formatTimestampMs(ts);
+    });
+
+    const baseUrl = "{{ url }}";
+    let nextCursor = "{{ next_cursor }}" == "None" ? null : "{{ next_cursor }}";
+    let prevCursor = "{{ prev_cursor }}" == "None" ? null : "{{ prev_cursor }}";
+
+    const postsContainer = document.getElementById("posts-container");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+
+    let prevHandler = null;
+    let nextHandler = null;
+
+    async function loadPosts(limit, cursor, direction) {
+      const res = await fetch(
+        `/api/timeline_post?limit=${limit}&cursor=${cursor}&direction=${direction}`
+      );
+      const { timeline_posts, avatars, prev_cursor, next_cursor } =
+        await res.json();
+
+      postsContainer.innerHTML = timeline_posts
+        .map((p) => {
+          const formattedDate = formatTimestampMs(p.created_at);
+          return `
+            <div class="timeline-post entry">
+              <img src="${p["avatar_url"] || ""}" alt="${p.email}" />
+              <div class="post-body">
+                <h3>${p.name} <small>&lt;${p.email}&gt;</small></h3>
+                <p class="timestamp">${formattedDate}</p>
+                <p class="content">${p.content}</p>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      updateButtons(postLimit, prev_cursor, next_cursor);
+    }
+
+    function updateButtons(limit, prevCursorValue, nextCursorValue) {
+      if (prevHandler) prevBtn.removeEventListener("click", prevHandler);
+      if (nextHandler) nextBtn.removeEventListener("click", nextHandler);
+
+      prevHandler = () => loadPosts(limit, prevCursorValue, "prev");
+      nextHandler = () => loadPosts(limit, nextCursorValue, "next");
+
+      prevBtn.addEventListener("click", prevHandler);
+      nextBtn.addEventListener("click", nextHandler);
+
+      prevBtn.disabled = !prevCursorValue;
+      nextBtn.disabled = !nextCursorValue;
+    }
+
+    updateButtons(postLimit, prevCursor, nextCursor);
+  });
+</script>
 {% endblock %}

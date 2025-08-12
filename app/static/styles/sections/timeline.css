@@ -2,6 +2,9 @@
     margin-top: 80px;
 }
 
+.posts-feed {
+    min-height: 600px;
+}
 .timeline-post.entry {
     display: flex;
     align-items: flex-start;
@@ -49,3 +52,38 @@
 .timeline-post.entry .post-body {
     flex: 1;
 }
+  .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border-radius: 0; /* remove rounded corners */
+    margin-bottom: 1.5rem;
+    box-shadow: none; /* remove shadow */
+  }
+
+  /* Buttons */
+  .pagination-controls button {
+    flex: 1; /* take equal full width inside container */
+    max-width: 300px; /* optional max width for buttons */
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    background: #4a90e2;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    user-select: none;
+  }
+
+  .pagination-controls button:hover:not(:disabled) {
+    background: #357ABD;
+    transform: translateY(-2px);
+  }
+
+  .pagination-controls button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }

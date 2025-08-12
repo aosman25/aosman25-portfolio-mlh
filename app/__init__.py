@@ -4,13 +4,10 @@ from dotenv import load_dotenv
 import json
 from peewee import *
 import time
-import hashlib
 from urllib.parse import quote_plus
 from playhouse.shortcuts import model_to_dict
+from app.utils import generate_avatar
 import re
-
-
-  
 
 load_dotenv()
 app = Flask(__name__)
@@ -30,10 +27,13 @@ class TimelinePost(Model):
     name = CharField()
     email = CharField()
     content = TextField()
-    created_at = BigIntegerField(
-        default=lambda: int(time.time() * 1000),  # milliseconds
-        index=True
-    )
+    created_at = BigIntegerField(default=lambda: int(time.time() * 1000), index=True)
+    avatar_url = CharField()
+
+    def save(self, *args, **kwargs):
+        if not self.avatar_url:
+            self.avatar_url = generate_avatar(self.email, self.name)
+        return super().save(*args, **kwargs)
 
     class Meta:
         database = mydb
@@ -62,30 +62,21 @@ def hobbies():
 
 @app.route('/timeline')
 def timeline():
-    posts = get_time_line_post()["timeline_posts"]
-    avatar_base_url = "https://gravatar.com/avatar"
-    avatars = {}
-    
+    timeline_data = get_time_line_post()  # returns posts + cursors
+    posts = timeline_data["timeline_posts"]
+    next_cursor = timeline_data["next_cursor"]
+    prev_cursor = timeline_data["prev_cursor"]
 
-    for p in posts:
-        p["email"] = p["email"].lower().strip()
-        email = p["email"]
-        name = p.get("name", "User")
-        if email not in avatars:
-            ui_avatar_path = f"/{quote_plus(name)}/128/0D8ABC/FFFFFF/2/0.35/true/true/false/png"
-            fallback_url = f"https://ui-avatars.com/api{ui_avatar_path}"
-            fallback_url_encoded = quote_plus(fallback_url)
-
-            hashed_email = hashlib.md5(email.encode('utf-8')).hexdigest()
-            avatars[email] = f"{avatar_base_url}/{hashed_email}?d={fallback_url_encoded}"
     return render_template(
         'pages/timeline.html',
         **portfolio_data,
         posts=posts,
-        avatars=avatars,
         url=os.getenv("URL"),
-        title="Timeline"
+        title="Timeline",
+        next_cursor=next_cursor,
+        prev_cursor=prev_cursor
     )
+
 
 
 @app.route('/api/timeline_post', methods=['POST'])
@@ -113,18 +104,22 @@ def post_time_line_post():
 
 @app.route('/api/timeline_post', methods=['GET'])
 def get_time_line_post():
-    limit = request.args.get('limit', 10, type=int)
+    limit = request.args.get('limit', 4, type=int)
     cursor = request.args.get('cursor', None, type=int)
     direction = request.args.get('direction', 'next', type=str)
     query = TimelinePost.select()
     if cursor:
         if direction == 'next':
             query = query.where(TimelinePost.created_at < int(cursor)) # Filter Rows based on the create_at timestamp
+            query = query.order_by(TimelinePost.created_at.desc())
         elif direction == 'prev':
             query = query.where(TimelinePost.created_at > int(cursor))
-    
-    query = query.order_by(TimelinePost.created_at.desc())
+            query = query.order_by(TimelinePost.created_at.asc())
+    else:
+        query = query.order_by(TimelinePost.created_at.desc())
     items = query.limit(limit)
+    if direction == "prev":
+        items = items[::-1]
     if items:
         first_item_cursor = items[0].created_at
         last_item_cursor = items[-1].created_at
@@ -135,7 +130,8 @@ def get_time_line_post():
     else:
         prev_cursor = None
         next_cursor = None
-    response = {'timeline_posts': [model_to_dict(p) for p in items], 'next_cursor': next_cursor, 'prev_cursor': prev_cursor}
+    posts = [model_to_dict(p) for p in items]
+    response = {'timeline_posts': posts, 'next_cursor': next_cursor, 'prev_cursor': prev_cursor}
     return response
 
 @app.route('/api/timeline_post/<int:post_id>', methods=["DELETE"])

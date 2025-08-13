@@ -3,34 +3,44 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify
 from dotenv import load_dotenv
 import json
 from peewee import *
-import datetime
-import hashlib
+import time
 from urllib.parse import quote_plus
 from playhouse.shortcuts import model_to_dict
+from app.utils import generate_avatar
 import re
-
-
-  
+from flask_redis import FlaskRedis
 
 load_dotenv()
 app = Flask(__name__)
 
+
 if os.getenv("TESTING") == "true":
+    import fakeredis
     print("Running in test mode")
     mydb = SqliteDatabase('file:memory?mode=memory&cache=shared', uri=True)
+    # In-memory fake Redis client
+    redis_client = fakeredis.FakeStrictRedis()
 else:
+    app.config['REDIS_URL'] = os.getenv('REDIS_URL')
     mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"),
                         user=os.getenv("MYSQL_USER"),
                         password=os.getenv("MYSQL_PASSWORD"),
                         host=os.getenv("MYSQL_HOST"),
                         port=3306)
+    redis_client = FlaskRedis(app)
   
 
 class TimelinePost(Model):
     name = CharField()
     email = CharField()
     content = TextField()
-    created_at = DateTimeField(default=datetime.datetime.now)
+    created_at = BigIntegerField(default=lambda: int(time.time() * 1000), index=True)
+    avatar_url = CharField()
+
+    def save(self, *args, **kwargs):
+        if not self.avatar_url:
+            self.avatar_url = generate_avatar(self.email, self.name)
+        return super().save(*args, **kwargs)
 
     class Meta:
         database = mydb
@@ -59,30 +69,21 @@ def hobbies():
 
 @app.route('/timeline')
 def timeline():
-    posts = get_time_line_post()["timeline_posts"]
-    avatar_base_url = "https://gravatar.com/avatar"
-    avatars = {}
-    
+    timeline_data = get_time_line_post()  # returns posts + cursors
+    posts = timeline_data["timeline_posts"]
+    next_cursor = timeline_data["next_cursor"]
+    prev_cursor = timeline_data["prev_cursor"]
 
-    for p in posts:
-        p["email"] = p["email"].lower().strip()
-        email = p["email"]
-        name = p.get("name", "User")
-        if email not in avatars:
-            ui_avatar_path = f"/{quote_plus(name)}/128/0D8ABC/FFFFFF/2/0.35/true/true/false/png"
-            fallback_url = f"https://ui-avatars.com/api{ui_avatar_path}"
-            fallback_url_encoded = quote_plus(fallback_url)
-
-            hashed_email = hashlib.md5(email.encode('utf-8')).hexdigest()
-            avatars[email] = f"{avatar_base_url}/{hashed_email}?d={fallback_url_encoded}"
     return render_template(
         'pages/timeline.html',
         **portfolio_data,
         posts=posts,
-        avatars=avatars,
         url=os.getenv("URL"),
-        title="Timeline"
+        title="Timeline",
+        next_cursor=next_cursor,
+        prev_cursor=prev_cursor
     )
+
 
 
 @app.route('/api/timeline_post', methods=['POST'])
@@ -110,13 +111,47 @@ def post_time_line_post():
 
 @app.route('/api/timeline_post', methods=['GET'])
 def get_time_line_post():
-    return {
-        'timeline_posts': [
-            model_to_dict(p)
-            for p in 
-            TimelinePost.select().order_by(TimelinePost.created_at.desc())
-        ]
-    }
+    limit = request.args.get('limit', 4, type=int)
+    cursor = request.args.get('cursor', None, type=int)
+    direction = request.args.get('direction', 'next', type=str)
+    cache_key = None
+    
+    if cursor:
+        cache_key = f"timeline_post:limit={limit}:cursor={cursor}:direction={direction}"
+        cached_response = redis_client.get(cache_key)
+        if cached_response:
+            return json.loads(cached_response)
+
+    query = TimelinePost.select()
+    if cursor:
+        if direction == 'next':
+            query = query.where(TimelinePost.created_at < int(cursor)) # Filter Rows based on the create_at timestamp
+            query = query.order_by(TimelinePost.created_at.desc())
+        elif direction == 'prev':
+            query = query.where(TimelinePost.created_at > int(cursor))
+            query = query.order_by(TimelinePost.created_at.asc())
+    else:
+        query = query.order_by(TimelinePost.created_at.desc())
+    items = query.limit(limit)
+    if direction == "prev":
+        items = items[::-1]
+    if items:
+        first_item_cursor = items[0].created_at
+        last_item_cursor = items[-1].created_at
+        has_next = TimelinePost.select().where(TimelinePost.created_at < last_item_cursor).exists()
+        has_prev = TimelinePost.select().where(TimelinePost.created_at > first_item_cursor).exists()
+        prev_cursor = first_item_cursor if has_prev else None
+        next_cursor = last_item_cursor if has_next else None
+    else:
+        prev_cursor = None
+        next_cursor = None
+    posts = [model_to_dict(p) for p in items]
+    response = {'timeline_posts': posts, 'next_cursor': next_cursor, 'prev_cursor': prev_cursor}
+    
+    if cache_key:
+        redis_client.set(cache_key, json.dumps(response), ex=3600)
+
+    return response
 
 @app.route('/api/timeline_post/<int:post_id>', methods=["DELETE"])
 def delete_post(post_id):

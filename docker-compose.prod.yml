@@ -8,6 +8,7 @@ services:
       - .env
     depends_on:
       - mysql
+      - redis
   
   mysql:
     container_name: mysql
@@ -31,7 +32,14 @@ services:
       - nginx_secrets:/etc/letsencrypt
       - ./user_conf.d:/etc/nginx/user_conf.d
     depends_on:
-      - myportfolio
+      - myportfolio  
+  redis:
+    container_name: redis
+    image: redis:8.2.0-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
 
 volumes:
   mydatabase:

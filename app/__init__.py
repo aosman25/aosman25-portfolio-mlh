@@ -64,12 +64,13 @@ def populate_timeline_posts(n=100):
 
 @app.before_first_request
 def init_db_population():
-    populated = os.getenv("POPULATED_DB", "false").lower()
-    if populated != "true":
-        print("Populating database with fake timeline posts...")
-        populate_timeline_posts(100)
-    else:
-        print("Skipping population because POPULATED_DB is set to true.")
+    if os.getenv("TESTING") == "false":
+        populated = os.getenv("POPULATED_DB", "false").lower()
+        if populated != "true":
+            print("Populating database with fake timeline posts...")
+            populate_timeline_posts(100)
+        else:
+            print("Skipping population because POPULATED_DB is set to true.")
 
 @app.route('/')
 def index():

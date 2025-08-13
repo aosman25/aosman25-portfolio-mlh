@@ -9,9 +9,12 @@ from playhouse.shortcuts import model_to_dict
 from app.utils import generate_avatar
 import re
 from flask_redis import FlaskRedis
+from faker import Faker
+
 
 load_dotenv()
 app = Flask(__name__)
+fake = Faker()
 
 
 if os.getenv("TESTING") == "true":
@@ -50,6 +53,23 @@ mydb.create_tables([TimelinePost])
 
 with open("app/static/data/portfolio.json", "r", encoding="utf-8") as f:
     portfolio_data = json.load(f)
+
+def populate_timeline_posts(n=100):
+    for _ in range(n):
+        name = fake.name()
+        email = fake.email()
+        content = fake.sentence(nb_words=12)
+
+        TimelinePost.create(name=name, email=email, content=content)
+
+@app.before_first_request
+def init_db_population():
+    populated = os.getenv("POPULATED_DB", "false").lower()
+    if populated != "true":
+        print("Populating database with fake timeline posts...")
+        populate_timeline_posts(100)
+    else:
+        print("Skipping population because POPULATED_DB is set to true.")
 
 @app.route('/')
 def index():

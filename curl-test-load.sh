@@ -14,13 +14,14 @@ info()  { echo -e "${GREEN}$1${NC}"; }
 warn()  { echo -e "${YELLOW}$1${NC}"; }
 
 # === Usage Check ===
-if [ $# -ne 2 ]; then
-  echo -e "${RED}Usage: $0 <number_of_requests> <parallel_processes>${NC}"
+if [ $# -ne 3 ]; then
+  echo -e "${RED}Usage: $0 <number_of_requests> <parallel_processes> <page_limit>${NC}"
   exit 1
 fi
 
 REQ_COUNT="$1"
 PARALLEL="$2"
+PAGE_LIMIT="$3"
 
 APP_CONTAINER="myportfolio-load"
 DB_CONTAINER="mysql-load"
@@ -42,11 +43,11 @@ cleanup() {
   kill "$APP_STATS_PID" "$DB_STATS_PID" 2>/dev/null || true
   wait "$APP_STATS_PID" "$DB_STATS_PID" 2>/dev/null || true
 }
-trap cleanup EXIT INT
+trap cleanup EXIT INT TERM
 
 log "Starting Docker containers..."
 docker compose -f docker-compose-load-test.yml down > /dev/null 2>&1
-docker compose -f docker-compose-load-test.yml up -d > /dev/null 2>&1
+docker compose -f docker-compose-load-test.yml up -d --build > /dev/null 2>&1
 
 log "Waiting for container ${YELLOW}$APP_CONTAINER${CYAN} to start..."
 until [ "$(docker inspect -f '{{.State.Running}}' "$APP_CONTAINER" 2>/dev/null)" == "true" ]; do
@@ -98,8 +99,40 @@ APP_STATS_PID=$!
 log_stats_loop "$DB_CONTAINER" "$DB_STATS_FILE" "GET" &
 DB_STATS_PID=$!
 
-log "Fetching $REQ_COUNT posts using $PARALLEL parallel threads..."
-seq 1 "$REQ_COUNT" | xargs -P"$PARALLEL" -I{} curl -s "$BASE_URL/api/timeline_post?load_id={}" > /dev/null
+run_pagination_session() {
+  local session_id=$1
+  local cursor=""
+  local direction="next"
+  local count=0
+
+  while [ "$count" -lt "$REQ_COUNT" ]; do
+    if [ -z "$cursor" ]; then
+      # First request without cursor
+      response=$(curl -s "$BASE_URL/api/timeline_post?limit=$PAGE_LIMIT&load_id=${session_id}_$count")
+    else
+      response=$(curl -s "$BASE_URL/api/timeline_post?limit=$PAGE_LIMIT&cursor=$cursor&direction=$direction&load_id=${session_id}_$count")
+    fi
+
+    # Extract next_cursor using jq (empty string if null)
+    next_cursor=$(echo "$response" | jq -r '.next_cursor // empty')
+
+    if [ -z "$next_cursor" ]; then
+      # No more pages, exit pagination loop
+      break
+    fi
+
+    cursor=$next_cursor
+    count=$((count + 1))
+  done
+}
+
+export -f run_pagination_session
+export BASE_URL
+export REQ_COUNT
+export PAGE_LIMIT
+
+log "Fetching $REQ_COUNT posts using $PARALLEL parallel pagination sessions with page limit $PAGE_LIMIT..."
+seq 1 "$PARALLEL" | xargs -P"$PARALLEL" -I{} bash -c "run_pagination_session {}"
 
 log "GET phase completed. Stopping GET stats logging..."
 kill "$APP_STATS_PID" "$DB_STATS_PID" 2>/dev/null || true

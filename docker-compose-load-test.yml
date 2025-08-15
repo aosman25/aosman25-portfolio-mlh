@@ -30,5 +30,5 @@ services:
     container_name: redis-load
     image: redis:8.2.0-alpine
     restart: always
-    ports:
-      - "6300:6379"
+    expose:
+      - "6300"

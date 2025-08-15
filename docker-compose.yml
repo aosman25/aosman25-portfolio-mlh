@@ -28,8 +28,8 @@ services:
     container_name: redis
     image: redis:8.2.0-alpine
     restart: always
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
 
 volumes:
   mydatabase:

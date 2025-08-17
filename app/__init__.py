@@ -183,6 +183,61 @@ def delete_post(post_id):
     TimelinePost.delete_by_id(post_id)
     return model_to_dict(target_post)
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    results = {}
+    try:
+        # Test portfolio pages including redirect for '/'
+        page_routes = ['/', '/portfolio', '/technical-projects', '/hobbies', '/timeline']
+        with app.test_client() as client:
+            for route in page_routes:
+                try:
+                    resp = client.get(route, follow_redirects=True)  # Follow redirects
+                    results[route] = {'status_code': resp.status_code, 'ok': resp.status_code == 200}
+                except Exception as e:
+                    results[route] = {'error': str(e)}
+
+            # Test timeline API POST
+            test_post_data = {
+                'name': 'Health Check User',
+                'email': 'healthcheck@example.com',
+                'content': 'This is a test post for health check.'
+            }
+            post_resp = client.post('/api/timeline_post', data=test_post_data)
+            if post_resp.status_code == 200:
+                post_json = post_resp.get_json()
+                results['/api/timeline_post POST'] = {'status_code': 200, 'post_id': post_json.get('id')}
+
+                # Test timeline GET with cursor
+                get_resp = client.get('/api/timeline_post', query_string={'limit': 1})
+                results['/api/timeline_post GET'] = {'status_code': get_resp.status_code, 'ok': get_resp.status_code == 200}
+
+                # Test DELETE
+                delete_resp = client.delete(f"/api/timeline_post/{post_json.get('id')}")
+                results['/api/timeline_post DELETE'] = {'status_code': delete_resp.status_code, 'ok': delete_resp.status_code == 200}
+            else:
+                results['/api/timeline_post POST'] = {'status_code': post_resp.status_code, 'ok': False}
+        
+        # Redis check
+        try:
+            redis_client.set('health_check', 'ok', ex=5)
+            val = redis_client.get('health_check')
+            results['redis'] = {'ok': val == b'ok' or val == 'ok'}
+        except Exception as e:
+            results['redis'] = {'error': str(e)}
+        
+        # DB connection check
+        try:
+            mydb.execute_sql('SELECT 1;')
+            results['database'] = {'ok': True}
+        except Exception as e:
+            results['database'] = {'error': str(e)}
+        
+    except Exception as e:
+        results['health_check'] = {'error': str(e)}
+    
+    return jsonify(results)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('index'))

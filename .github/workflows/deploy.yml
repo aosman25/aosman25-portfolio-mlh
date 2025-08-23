@@ -37,15 +37,15 @@ jobs:
         run: |
           ssh my-vps << 'EOF'
             cd '${{ secrets.PROJECT_ROOT }}'
-            git fetch && git reset origin/main --hard > /dev/null
-            rm -f ../redeploy-site.sh
-            cp -f redeploy-site.sh ..
+            sudo git fetch && sudo git reset origin/main --hard > /dev/null
+            sudo rm -f ../redeploy-site.sh
+            sudo cp -f redeploy-site.sh ..
             cd ..
-            chmod +x redeploy-site.sh
-            ./redeploy-site.sh
+            sudo chmod +x redeploy-site.sh
+            sudo ./redeploy-site.sh
           EOF
       - name: Print Docker Containers
-        run: ssh my-vps 'docker ps'
+        run: ssh my-vps 'sudo docker ps'
       - name: Send Discord Success Message
         run: curl -s -X POST "${{ secrets.DISCORD_WEBHOOK }}" -d "content=🚀 Deployment Successful"
 
